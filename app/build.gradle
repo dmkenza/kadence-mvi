@@ -33,10 +33,11 @@ android {
 }
 
 dependencies {
-    api project(path: ':library')
 
-    //kadence library
-//    implementation 'com.github.dmkenza:kadence-library:0.2'
+//    kadence library
+//    implementation 'com.github.dmkenza:kadence-library:0.4'
+
+    implementation project(path: ':library')
 
     //weak-handler
     implementation 'com.badoo.mobile:android-weak-handler:1.0'
