@@ -1,0 +1,3 @@
+include ':library-mvi'
+include ':app'
+rootProject.name = "Kadence MVI"
