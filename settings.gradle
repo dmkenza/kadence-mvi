@@ -1,3 +1,6 @@
 include ':library-mvi'
 include ':app'
+include 'library'
+project(':library').projectDir = new File(settingsDir, '../KadenceLibrary/library')
+
 rootProject.name = "Kadence MVI"
