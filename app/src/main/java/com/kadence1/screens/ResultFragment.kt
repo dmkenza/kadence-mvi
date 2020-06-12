@@ -5,13 +5,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.viewModels
+import com.kadence.mvi.viewModels
+import com.kadence.mvi.fragment.BaseFlowFragment
 import com.kadence1.R
 import com.kadence1.vm.*
 import kotlinx.android.synthetic.main.screen_result.*
 
 
-class ResultFragment : BasicFlowFragment<MainViewState, MainViewEffect, MainViewEvent, MainVm>() {
+class ResultFragment : BaseFlowFragment<MainViewState, MainViewEffect, MainViewEvent, MainVm>() {
 
 
     override val viewModel: MainVm by viewModels()
@@ -42,11 +43,9 @@ class ResultFragment : BasicFlowFragment<MainViewState, MainViewEffect, MainView
         super.onViewCreated(view, savedInstanceState)
         bt.setOnClickListener {
 
-
             val args = Bundle().also {
                 it.putString(MainFragment.KEY, "asd")
             }
-
 
             val intent = Intent()
             intent.putExtra("powerCheck", "RED_FRAGMENT")

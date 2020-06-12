@@ -5,13 +5,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.kadence.mvi.fragment.BaseChildFragment
 import com.kadence1.R
 import com.kadence1.vm.*
 import com.kadencelibrary.extension.debug.log
 import com.kadencelibrary.extension.debug.toast
 import kotlinx.android.synthetic.main.frag_test_0.*
 
-class TestChildFragment : BasicChildFragment<MainViewState, MainViewEffect, TestViewEvent, TestChildVm>() {
+class TestChildFragment : BaseChildFragment<MainViewState, MainViewEffect, TestViewEvent, TestChildVm>() {
 
 //            by viewModels()
 
@@ -78,7 +79,7 @@ class TestChildFragment : BasicChildFragment<MainViewState, MainViewEffect, Test
 
     override fun renderViewEffect(effect: MainViewEffect) {
         log("TestChildFragment  renderViewEffect $effect")
-        toast("TestChildFragment $effect ")
+//        toast("TestChildFragment $effect ")
 
     }
 

@@ -1,6 +1,5 @@
 package com.kadence1.screens
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,25 +7,24 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import com.kadence.mvi.fragment.BaseFlowFragment
 import com.kadence1.R
 import com.kadence1.ResultActivity
+import com.kadence.mvi.viewModels
 import com.kadence1.vm.*
-import com.kadencelibrary.extension.context.extraNotNull
 import com.kadencelibrary.extension.context.addToStack
-import com.kadencelibrary.extension.debug.d
+import com.kadencelibrary.extension.context.extraNotNull
+import com.kadencelibrary.extension.debug.log
 import com.kadencelibrary.extension.debug.toast
 import com.kadencelibrary.extension.postDelay
 import com.kadencelibrary.extension.text.getDebugID
 import kotlinx.android.synthetic.main.screen_main.*
 
-class MainFragment : BasicFlowFragment<MainViewState, MainViewEffect, MainViewEvent, MainVm>() {
+class MainFragment : BaseFlowFragment<MainViewState, MainViewEffect, MainViewEvent, MainVm>() {
+
 
     override val viewModel: MainVm by viewModels()
 
-    init {
-        d("asd")
-    }
 
     companion object {
 
@@ -57,18 +55,10 @@ class MainFragment : BasicFlowFragment<MainViewState, MainViewEffect, MainViewEv
         inflater.inflate(R.layout.screen_main, container, false)
 
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-
-//        viewModel = (context as MainActivity).re
-
-
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         if (childFragmentManager.fragments.isEmpty()) {
-//            first()
         }
 
         bt1.setOnClickListener {
@@ -86,8 +76,10 @@ class MainFragment : BasicFlowFragment<MainViewState, MainViewEffect, MainViewEv
 //                toast("delay event")
 
                 val fragments: List<Fragment> = childFragmentManager.fragments
-                fragments.mapNotNull { it as? TestChild2Fragment }.firstOrNull()?.viewModel?.process(
-                    TestViewEvent.ChildTestForParent("postDelay TestChild2Fragment"))
+                fragments.mapNotNull { it as? TestChild2Fragment }
+                    .firstOrNull()?.viewModel?.process(
+                    TestViewEvent.ChildTestForParent("postDelay TestChild2Fragment")
+                )
 
             }
 
@@ -105,6 +97,8 @@ class MainFragment : BasicFlowFragment<MainViewState, MainViewEffect, MainViewEv
     }
 
     override fun renderViewState(state: MainViewState) {
+        toast("renderViewState state = $state")
+        log("renderViewState state = $state")
 
         tv_count.setText(" ${viewModel}  ${state.counter + 1}")
         state.contentTypes.map {
@@ -114,13 +108,8 @@ class MainFragment : BasicFlowFragment<MainViewState, MainViewEffect, MainViewEv
 
     }
 
-
-    fun resultTest() {
-        toast("resultTest")
-    }
-
     val getContent = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-        val t1 = it.data.extraNotNull("powerCheck","RED_DEFAULT")
+        val t1 = it.data.extraNotNull("powerCheck", "RED_DEFAULT")
         toast("getContent $t1")
         // Handle the returned Uri
     }
@@ -151,7 +140,7 @@ class MainFragment : BasicFlowFragment<MainViewState, MainViewEffect, MainViewEv
             is MainViewEffect.ShowToast -> TODO()
 
             is MainViewEffect.AddFragment -> {
-                toast("AddFragment")
+//                toast("AddFragment")
 
                 val tag = "FRAG_TAG_${effect.position}"
                 val frag = childFragmentManager.findFragmentByTag(tag)

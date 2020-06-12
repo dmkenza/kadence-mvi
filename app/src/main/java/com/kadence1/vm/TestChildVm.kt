@@ -1,10 +1,8 @@
 package com.kadence1.vm
 
 import android.app.Application
-import com.kadence1.vm.ChildVm
-import com.kadence1.vm.MainViewEffect
-import com.kadence1.vm.MainViewState
-import com.kadence1.vm.TestViewEvent
+import androidx.lifecycle.SavedStateHandle
+import com.kadence.mvi.vm.ChildVm
 import com.kadencelibrary.extension.ChildViewModelContract
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -19,19 +17,9 @@ class TestChildVm(
     ChildVm<MainViewState, MainViewEffect, TestViewEvent>(application) {
 
 
-    var counter = 0
 
     init {
-        viewState = MainViewState(counter = 0, contentTypes = HashMap())
 
-        Observable.interval(1000, 1000, TimeUnit.MILLISECONDS)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe( {
-                counter++
-                viewState = viewState.copy(counter = counter )
-                viewEffect = MainViewEffect.TestEffect("counter = $counter")
-            }).addTo(disposables)
 
 //        viewState = MainViewState()
     }
@@ -54,7 +42,26 @@ class TestChildVm(
         return true
     }
 
-    override fun clear() {}
+
+    override fun  initViewModel(savedStateHandle: SavedStateHandle, modelKey : String  ) {
+
+        val default  = MainViewState(counter = 0, contentTypes = HashMap())
+        onRestoreState(savedStateHandle, MainViewState::class.java, modelKey, default)
+
+
+        Observable.interval(1000, 1000, TimeUnit.MILLISECONDS)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe {
+
+                var counter = viewState.counter
+
+                counter++
+                viewState = viewState.copy(counter = counter)
+                viewEffect = MainViewEffect.TestEffect("counter = $counter")
+            }.addTo(disposables)
+
+    }
 
 
 }

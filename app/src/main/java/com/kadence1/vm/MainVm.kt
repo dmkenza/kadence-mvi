@@ -1,31 +1,32 @@
 package com.kadence1.vm
 
 import android.app.Application
+import androidx.lifecycle.SavedStateHandle
+import com.kadence.mvi.vm.BaseVm
+import com.kadence.mvi.vm.ChildVm
 import com.kadencelibrary.extension.ChildViewModelContract
+import com.kadencelibrary.extension.debug.d
 import com.kadencelibrary.extension.debug.toast
 
-class MainVm(application: Application) :
-    BaseVm<MainViewState, MainViewEffect, MainViewEvent>(application),
+class MainVm(application: Application, override val savedStateHandle: SavedStateHandle) :
+    BaseVm<MainViewState, MainViewEffect, MainViewEvent>(application, savedStateHandle),
     ChildViewModelContract<TestViewEvent> {
 
 //    val childVm = TestChildVm(application, this)
 
     init {
-        viewState = MainViewState(counter = 0, contentTypes = HashMap())
-//        childVMs.add(childVm)
-
-
-//        childVm.viewStates().observe {
-//
-//        }
+        val restoredState = restoreViewState(MainViewState::class.java, savedStateHandle)
+        viewState = restoredState ?: MainViewState(counter = -1, contentTypes = HashMap())
     }
-
-    var counter = 0
-    val contentTypes: HashMap<Int, ContentType> = HashMap()
 
 
     override fun process(viewEvent: MainViewEvent) {
         super.process(viewEvent)
+
+
+        var counter = viewState.counter
+        val contentTypes: HashMap<Int, ContentType> = viewState.contentTypes
+
 
         when (viewEvent) {
             is MainViewEvent.Test -> {
@@ -56,15 +57,11 @@ class MainVm(application: Application) :
                 if (counter >= 5) {
                     counter = 0
                 }
+                counter++
 
                 contentTypes.put(counter, ContentType.Test1)
                 viewState = viewState.copy(counter = counter, contentTypes = contentTypes)
-
                 viewEffect = MainViewEffect.AddFragment(counter, 0)
-
-
-                counter++
-
 
             }
             MainViewEvent.AddSecondFragment -> {
@@ -72,18 +69,19 @@ class MainVm(application: Application) :
                 if (counter >= 5) {
                     counter = 0
                 }
+                counter++
+
 
                 contentTypes.put(counter, ContentType.Test2)
                 viewState = viewState.copy(counter = counter, contentTypes = contentTypes)
                 viewEffect = MainViewEffect.AddFragment(counter, 1)
 
-                counter++
             }
             MainViewEvent.OnBackPressed -> {
                 val last = contentTypes.keys.lastOrNull()
-                if (last == null) {
-                    viewEffect = MainViewEffect.NavigationBack
-                }
+//                if (last == null) {
+//                    viewEffect = MainViewEffect.NavigationBack
+//                }
                 contentTypes.remove(last)
                 viewState = viewState.copy(counter = counter, contentTypes = contentTypes)
                 viewEffect = MainViewEffect.RemoveLastFragment
@@ -92,42 +90,6 @@ class MainVm(application: Application) :
 
     }
 
-
-    override fun onCleared() {
-//        childVMs.map {  it.value }
-        childVMs.clear()
-        super.onCleared()
-    }
-
-    override fun <T> popUpOrCreateChildViewModel(
-        clazz: Class<T>,
-        modelKey: String
-    ): ChildVm<*, *, *>? {
-
-
-        if (clazz == TestChildVm::class.java) {
-//        if (clazz.canonicalName == TestChildVm::class.java.canonicalName) {
-            var model = childVMs.get(modelKey)
-            if (model == null) {
-                model = TestChildVm(this.getApplication(), this)
-                childVMs.put(modelKey, model)
-            }
-            return model
-        }
-
-        return null
-    }
-
-
-    override fun <T> removeChildViewModel(clazz: Class<T>, modelKey: String) {
-        if (clazz.canonicalName == TestChildVm::class.java.canonicalName) {
-            val model = childVMs.get(modelKey)
-
-            model?.clear()
-            childVMs.remove(modelKey)
-
-        }
-    }
 
     override fun process(viewEvent: TestViewEvent): Boolean {
 

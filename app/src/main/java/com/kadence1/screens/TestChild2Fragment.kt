@@ -5,14 +5,16 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.kadence.mvi.fragment.BaseChildFragment
+import com.kadence.mvi.fragment.BaseChildFragment.Companion.MODEL_KEY
 import com.kadence1.R
 import com.kadence1.vm.*
 import com.kadencelibrary.extension.debug.d
-import kotlinx.android.synthetic.main.frag_test_0.*
+import kotlinx.android.synthetic.main.frag_test1.*
 
 
 class TestChild2Fragment :
-    BasicChildFragment<MainViewState, MainViewEffect, TestViewEvent, TestChildVm>() {
+    BaseChildFragment<MainViewState, MainViewEffect, TestViewEvent, TestChildVm>() {
 
 //    override val viewModel: MainVm by viewModels()
 

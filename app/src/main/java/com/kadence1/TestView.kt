@@ -21,18 +21,18 @@ class TestView @JvmOverloads constructor(
         LayoutInflater.from(context).inflate(R.layout.custom_test, this, true)
 //        setttingPreview("BaseMviView")
 
-        addOnAttachStateChangeListener(object : OnAttachStateChangeListener {
-            override fun onViewDetachedFromWindow(v: View?) {
-                log("onViewDetachedFromWindow ${this.toString()}")
-                toast("onViewDetachedFromWindow id = $id")
-
-            }
-
-            override fun onViewAttachedToWindow(v: View?) {
-                log("onViewAttachedToWindow ${this.toString()}")
-                toast("onViewAttachedToWindow id = $id")
-            }
-        })
+//        addOnAttachStateChangeListener(object : OnAttachStateChangeListener {
+//            override fun onViewDetachedFromWindow(v: View?) {
+//                log("onViewDetachedFromWindow ${this.toString()}")
+//                toast("onViewDetachedFromWindow id = $id")
+//
+//            }
+//
+//            override fun onViewAttachedToWindow(v: View?) {
+//                log("onViewAttachedToWindow ${this.toString()}")
+//                toast("onViewAttachedToWindow id = $id")
+//            }
+//        })
 
 
     }

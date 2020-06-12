@@ -1,25 +1,33 @@
-package com.kadence1.vm
+package com.kadence.mvi.vm
 
 import android.app.Application
 import androidx.annotation.CallSuper
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import com.kadencelibrary.data.ActiveMutableLiveData
 import com.kadencelibrary.extension.ViewModelContract
 import com.kadencelibrary.extension.debug.d
+import com.kadencelibrary.extension.text.toJson
+import com.kadencelibrary.extension.text.toObject
 import com.shopify.livedataktx.SupportMediatorLiveData
 import io.reactivex.disposables.CompositeDisposable
 
-abstract class BaseVm<STATE, EFFECT, EVENT>(application: Application) :
+abstract class BaseVm<STATE, EFFECT, EVENT>(
+    application: Application,
+    open val savedStateHandle: SavedStateHandle
+) :
     AndroidViewModel(application), ViewModelContract<EVENT> {
 
 
-    var childVMs: HashMap<String, ChildVm<*, *, *>> = HashMap()
+    var childs: HashMap<String, ChildVm<*, *, *>> = HashMap()
     val disposables = CompositeDisposable()
 
+    protected val SAVE_STATE_KEY = "SAVE_STATE_KEY"
 
-    private val _viewStates: MutableLiveData<STATE> = MutableLiveData()
+
+    private val _viewStates: MutableLiveData<STATE> = SupportMediatorLiveData()
     fun viewStates(): LiveData<STATE> = _viewStates
 
     private var _viewState: STATE? = null
@@ -73,16 +81,64 @@ abstract class BaseVm<STATE, EFFECT, EVENT>(application: Application) :
         super.onCleared()
         disposables.dispose()
         disposables.clear()
+        childs.clear()
         d("onCleared")
     }
 
 
-    open fun <T> popUpOrCreateChildViewModel(clazz: Class<T>, modelKey: String): ChildVm<*, *, *>? {
-        return null
+    protected open fun restoreViewState(
+        clazz: Class<STATE>,
+        savedStateHandle: SavedStateHandle
+    ): STATE? {
+        val stateJson = savedStateHandle.get<String>(SAVE_STATE_KEY)
+//        toast(getApplication(), "restoreViewState = ${stateJson}")
+        return stateJson?.toObject(clazz)
+
     }
 
-    open fun <T> removeChildViewModel(clazz: Class<T>, modelKey: String) {
+    fun onSaveState() {
+        val json = viewState?.toJson() ?: ""
+//        toast(getApplication(), "onSaveState $json" )
 
+        savedStateHandle.set(SAVE_STATE_KEY, json)
+        childs.map {  it.value.onSaveState(savedStateHandle) }
+    }
+
+
+    /**
+     * Generate instance for [ChildVm]
+     */
+
+    private fun <T : ChildVm<*, *, *>> createChildViewModel(entityClass: Class<T>): T {
+//        var entity: T = entityClass.newInstance()
+        val constructor = entityClass.constructors.firstOrNull()
+        val childVm = constructor?.newInstance(this.getApplication(), this)
+        return childVm as T
+
+    }
+
+
+    open fun <T : ChildVm<*, *, *>> popUpOrCreateChildViewModel(
+        clazz: Class<T>,
+        modelKey: String
+    ): ChildVm<*, *, *>? {
+
+        var model = childs.get(modelKey)
+        if (model == null) {
+            model = createChildViewModel(clazz)
+            model.initViewModel(savedStateHandle, modelKey)
+            childs.put(modelKey, model)
+        }
+        return model
+
+    }
+
+
+
+    open fun <T> removeChildViewModel(clazz: Class<T>, modelKey: String) {
+        val model = childs.get(modelKey)
+        model?.clear()
+        childs.remove(modelKey)
     }
 
 
