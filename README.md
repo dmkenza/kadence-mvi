@@ -2,8 +2,9 @@
 
 
 Features:
-- Simple save and restore ViewState with SavedStateHandle when activity was destroyed in background. (There are limitation ViewState must be less 0.5 MB)
-
+- Simple save and restore ViewState when activity was destroyed in background. 
+- Function for parent Fragments and child's Fragments for single activty Applcation .
+- Improved portability fragments between screens by reduced relations between fragments with using childs ViewModels in parent ViewModel associated with fragments.
 
 You can see example using https://github.com/dmkenza/example-kadence-mvi    
 
