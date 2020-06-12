@@ -21,7 +21,7 @@ https://proandroiddev.com/best-architecture-for-android-mvi-livedata-viewmodel-7
 
 To use library add 
 
-`implementation 'com.github.dmkenza:kadence-mvi:$LastVersion'`
+`implementation 'com.github.dmkenza:kadence-mvi:0.2'`
 
 
 and
