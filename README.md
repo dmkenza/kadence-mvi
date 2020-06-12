@@ -3,7 +3,7 @@
 
 Features:
 - Simple save and restore ViewState when activity was destroyed in background. (Limitation for ViewState 0.5 MB)
-- Functions for parent's fragments and child's fragments for single activity Applcation .
+- Base for parent's fragments and child's fragments for single activity Applcation .
 - Improved portability fragments between screens by reduced relations between fragments with using childs ViewModels in parent ViewModel associated with fragments.
 
 You can see example of using
