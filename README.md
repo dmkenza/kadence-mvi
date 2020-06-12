@@ -1,4 +1,5 @@
-# Kadence MVI -  framework based on MVI + LiveData + ViewModel for Single Activity Applcation.
+# Kadence MVI -  framework based on
+# MVI + LiveData + ViewModel for Single Activity Applcation.
 
 
 Features:
