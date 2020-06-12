@@ -8,6 +8,9 @@ Features:
 
 You can see example using https://github.com/dmkenza/example-kadence-mvi    
 
+and extra information
+https://proandroiddev.com/best-architecture-for-android-mvi-livedata-viewmodel-71a3a5ac7ee3
+
 
 # How to install
 
@@ -30,4 +33,3 @@ and
 
 
 
-https://proandroiddev.com/best-architecture-for-android-mvi-livedata-viewmodel-71a3a5ac7ee3
