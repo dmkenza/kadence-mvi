@@ -9,4 +9,25 @@ Features:
 You can see example using https://github.com/dmkenza/example-kadence-mvi    
 
 
+# How to install
+
+ 
+
+To use library add 
+
+`implementation 'com.github.dmkenza:kadence-mvi:$LastVersion'`
+
+
+and
+
+``allprojects {
+		repositories {
+			...
+			maven { url 'https://jitpack.io' }
+		}
+	}``
+
+
+
+
 https://proandroiddev.com/best-architecture-for-android-mvi-livedata-viewmodel-71a3a5ac7ee3
