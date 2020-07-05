@@ -1,32 +1,34 @@
 package com.kadence.mvi.fragment
 
-import BaseActivity
-import android.content.Context
+import com.kadence.mvi.KadenceMviActivity
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Observer
-import com.kadence.mvi.vm.BaseVm
-import com.kadence.mvi.vm.ChildVm
+import com.kadence.mvi.vm.BaseViewModel
+import com.kadence.mvi.vm.BaseChildViewModel
 import com.kadencelibrary.base.KadenceActivity
 import com.kadencelibrary.base.KadenceFragment
 import com.kadencelibrary.extension.TAG0
 import com.kadencelibrary.extension.debug.log
 import com.kadencelibrary.interfaces.HasContextExtensions
 
-abstract class BaseFlowFragment<STATE, EFFECT, EVENT, ViewModel : BaseVm<STATE, EFFECT, EVENT>> :
+abstract class BaseFlowFragment<STATE, EFFECT, EVENT, ViewModel : BaseViewModel<STATE, EFFECT, EVENT>> :
     KadenceFragment(), HasContextExtensions {
 
     abstract val viewModel: ViewModel
 
     var flowTAG = TAG0
 
+    var wasRestored: Boolean = false
+
     private val viewStateObserver = Observer<STATE> {
-        log( "observed viewState : $it")
+        log("observed viewState : $it")
         renderViewState(it)
     }
 
     private val viewEffectObserver = Observer<EFFECT> {
-        log( "observed viewEffect : $it")
+        log("observed viewEffect : $it")
         renderViewEffect(it)
     }
 
@@ -34,12 +36,21 @@ abstract class BaseFlowFragment<STATE, EFFECT, EVENT, ViewModel : BaseVm<STATE, 
         super.onViewCreated(view, savedInstanceState)
         viewModel.viewStates().observe(this, viewStateObserver)
         viewModel.viewEffects().observe(this, viewEffectObserver)
+
+    }
+
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        if (savedInstanceState != null) {
+            wasRestored = true
+        }
     }
 
 //    override fun onCreate(savedInstanceState: Bundle?) {
 //        super.onCreate(savedInstanceState)
 //
 //    }
+
 
     override fun onDestroy() {
         super.onDestroy()
@@ -65,34 +76,14 @@ abstract class BaseFlowFragment<STATE, EFFECT, EVENT, ViewModel : BaseVm<STATE, 
     }
 
 
-
-
-
-
-
-
-
     abstract fun renderViewState(state: STATE)
 
     abstract fun renderViewEffect(effect: EFFECT)
 
 
-
     @JvmOverloads
     fun startFlow(fragment: BaseFlowFragment<*, *, *, *>, tag: String, animate: Boolean = true) {
-        (activity as BaseActivity).startFlow(fragment , tag, animate)
-    }
-
-
-    @JvmOverloads
-    fun startFlowForResult(
-        fragment: BaseFlowFragment<*, *, *, *>,
-        tag: String,
-        requestCode: Int,
-        animate: Boolean = true
-    ) {
-        fragment.setTargetFragment(this, requestCode)
-        startFlow(fragment, tag, animate)
+        (activity as KadenceMviActivity).startFlow(fragment, tag, animate)
     }
 
 
@@ -118,12 +109,26 @@ abstract class BaseFlowFragment<STATE, EFFECT, EVENT, ViewModel : BaseVm<STATE, 
 
 
     @Suppress("UNCHECKED_CAST")
-    inline fun <reified T : ChildVm<*, *, *>>popUpOrCreateChildViewModel(clazz: Class<T>, modelKey: String): T? {
+    fun <T : BaseChildViewModel<*, *, *>> popUpOrCreateChildViewModel(
+        clazz: Class<T>,
+        modelKey: String
+    ): T? {
         return viewModel.popUpOrCreateChildViewModel<T>(clazz, modelKey) as? T
     }
 
+    @Suppress("UNCHECKED_CAST")
     fun <T> removeChildViewModel(clazz: Class<T>, modelKey: String): T? {
         return viewModel.removeChildViewModel<T>(clazz, modelKey) as? T
+    }
+
+
+    /**
+     * Function allow use  WindowInsets for change  UI element when systembar has been hided.
+     * @return Boolean - true for insets need apply in Parent Activity too.
+     */
+
+    open fun onApplyWindowInsets(insets: WindowInsetsCompat): Boolean {
+        return true
     }
 
 

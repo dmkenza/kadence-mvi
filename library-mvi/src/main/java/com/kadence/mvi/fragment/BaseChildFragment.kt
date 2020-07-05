@@ -3,15 +3,15 @@ package com.kadence.mvi.fragment
 import android.content.Context
 import android.os.Bundle
 import androidx.lifecycle.Observer
-import com.kadence.mvi.vm.ChildVm
+import com.kadence.mvi.vm.BaseChildViewModel
 import com.kadencelibrary.base.KadenceFragment
 import com.kadencelibrary.extension.TAG0
 import com.kadencelibrary.extension.context.extraNotNull
 import com.kadencelibrary.extension.debug.log
 import com.kadencelibrary.interfaces.HasContextExtensions
-import java.lang.Exception
+import java.lang.reflect.ParameterizedType
 
-abstract class BaseChildFragment<STATE, EFFECT, EVENT, ViewModel : ChildVm<STATE, EFFECT, EVENT>> :
+abstract class BaseChildFragment<STATE, EFFECT, EVENT, ViewModel : BaseChildViewModel<STATE, EFFECT, EVENT>> :
     KadenceFragment(), HasContextExtensions {
 
 
@@ -22,6 +22,23 @@ abstract class BaseChildFragment<STATE, EFFECT, EVENT, ViewModel : ChildVm<STATE
     }
 
     val modelTag by extraNotNull<String>(MODEL_KEY, TAG0)
+
+
+
+    fun addModelKey(key : String){
+        this.arguments?.putString(MODEL_KEY, key )
+    }
+
+
+    private var typeOfViewModel: Class<ViewModel>? = null
+
+
+    @Suppress("UNCHECKED_CAST")
+    open fun getTypeViewModel(): Class<ViewModel>? {
+        typeOfViewModel = (javaClass.genericSuperclass as? ParameterizedType)?.getActualTypeArguments()?.get(3) as Class<ViewModel>?
+        return typeOfViewModel
+    }
+
 
 
     private val viewStateObserver = Observer<STATE> {
@@ -40,21 +57,28 @@ abstract class BaseChildFragment<STATE, EFFECT, EVENT, ViewModel : ChildVm<STATE
 
 
 
-    inline fun <reified T : ViewModel > attachChildViewModel() {
+    inline fun attachChildViewModel() {
         val parentFragment = parentFragment as BaseFlowFragment<*, *, *, *>
-        val clazz = T::class.java
+        val clazz = getTypeViewModel()!!
         viewModel = parentFragment.popUpOrCreateChildViewModel(clazz, modelTag) ?: throw Exception("Parent's ViewModel should have childViewModel for this fragment.")
     }
 
-    inline fun <reified T : ViewModel> detachChildViewModel() {
+    inline fun detachChildViewModel() {
         val parentFragment = parentFragment as BaseFlowFragment<*, *, *, *>
-        val clazz = T::class.java
+        val clazz = getTypeViewModel()!!
         parentFragment.removeChildViewModel(clazz, modelTag)
 
     }
 
 
+    override fun onAttach(context: Context) {
+        attachChildViewModel()
+        super.onAttach(context)
+    }
 
+    override fun onDetach() {
+        super.onDetach()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
