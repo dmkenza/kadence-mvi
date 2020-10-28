@@ -35,8 +35,8 @@ abstract class BaseScreen<STATE, EFFECT, EVENT, ViewModel : BaseScreenViewModel<
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.viewStates().observe(this, viewStateObserver)
-        viewModel.viewEffects().observe(this, viewEffectObserver)
+        viewModel.viewStates().observe(viewLifecycleOwner, viewStateObserver)
+        viewModel.viewEffects().observe(viewLifecycleOwner, viewEffectObserver)
 
     }
 

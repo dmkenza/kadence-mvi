@@ -19,7 +19,6 @@ abstract class BaseScreenViewModel<STATE, EFFECT, EVENT>(
     AndroidViewModel(application), ViewModelContract<EVENT>, ChildViewModelContract<Any> {
 
 
-
     var childs: HashMap<String, BaseFragViewModel<*, *, *>> = HashMap()
     val disposables = CompositeDisposable()
     val removables = ArrayList<Removable<*>>()
@@ -33,7 +32,8 @@ abstract class BaseScreenViewModel<STATE, EFFECT, EVENT>(
 
     private var _viewState: STATE? = null
     protected var viewState: STATE
-        get() = _viewState ?: throw UninitializedPropertyAccessException("\"viewState\" was queried before being initialized")
+        get() = _viewState
+            ?: throw UninitializedPropertyAccessException("\"viewState\" was queried before being initialized")
         set(value) {
 
 //            d("setting viewState : $value")
@@ -69,10 +69,6 @@ abstract class BaseScreenViewModel<STATE, EFFECT, EVENT>(
 //        }
 
 
-
-
-
-
     @Suppress("UNCHECKED_CAST")
     open fun getTypeViewState(): Class<STATE>? {
         typeOfViewState =
@@ -80,7 +76,6 @@ abstract class BaseScreenViewModel<STATE, EFFECT, EVENT>(
                 ?.get(0) as Class<STATE>?
         return typeOfViewState
     }
-
 
 
     override fun process(viewEvent: EVENT) {
@@ -109,11 +104,9 @@ abstract class BaseScreenViewModel<STATE, EFFECT, EVENT>(
     }
 
 
-
     inline fun <reified T> findChild(): T {
         return childs.toList().find { it.second is T }?.second as T
     }
-
 
 
     /**
@@ -128,7 +121,7 @@ abstract class BaseScreenViewModel<STATE, EFFECT, EVENT>(
         try {
             val childVm = constructor?.newInstance(parent)
             return childVm as T
-        }catch (e  :Exception){
+        } catch (e: Exception) {
             d()
             e.printStackTrace()
             throw  Exception("")
@@ -153,7 +146,6 @@ abstract class BaseScreenViewModel<STATE, EFFECT, EVENT>(
     }
 
 
-
     open fun <T> removeChildViewModel(clazz: Class<T>, modelKey: String) {
         val model = childs.get(modelKey)
         model?.clear()
@@ -161,7 +153,7 @@ abstract class BaseScreenViewModel<STATE, EFFECT, EVENT>(
     }
 
 
-    open fun <T : Any> onSharedRepoRequested(clazz: Class<T>) : Any? {
+    open fun <T : Any> onSharedRepoRequested(clazz: Class<T>): Any? {
         return null
     }
 
