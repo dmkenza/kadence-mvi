@@ -36,8 +36,8 @@ android {
 dependencies {
 
     //    kadence library
-//    implementation 'com.github.dmkenza:kadence-library:0.4'
-    api project(path: ':library')
+    implementation 'com.github.dmkenza:kadence-library:0.5'
+//    api project(path: ':library')
 
 
     implementation fileTree(dir: "libs", include: ["*.jar"])
