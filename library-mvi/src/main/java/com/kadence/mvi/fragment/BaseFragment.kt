@@ -4,7 +4,6 @@ import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.lifecycleScope
 import com.kadence.mvi.RootFragmentHolder
 import com.kadence.mvi.vm.BaseFragViewModel
 import com.kadencelibrary.base.KadenceFragment
